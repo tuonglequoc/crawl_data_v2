@@ -5,9 +5,12 @@ function App() {
   const [maSP, setMaSP] = useState("");
   const [linkSP, setLinkSP] = useState("");
   const [product, setProduct] = useState("")
+  const [sources, setSources] = useState([])
 
   useEffect(() => {
-    console.log(`Khi load trang thì nó gọi khúc này`);
+    fetch(`http://localhost:8000/sources`).then(response => response.json()).then(data => setSources(data));
+
+    console.log(JSON.stringify(sources));
   }, []);
 
   const handleNguonSP = (e) => {
@@ -68,6 +71,7 @@ function App() {
         cols="30"
         rows="10"
         placeholder="Description"
+        value={product.description}
       >{product.description}</textarea>
     </div>
   );
