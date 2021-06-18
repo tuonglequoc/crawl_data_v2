@@ -1,0 +1,12 @@
+black==21.6b0
+bs4==0.0.1
+requests==2.25.1
+sqlalchemy==1.4.17
+alembic==1.6.5
+lxml==4.6.3
+fastapi==0.65.2
+uvicorn==0.14.0
+pymysql==1.0.2
+cryptography==3.4.7
+requests_html==0.10.0
+selenium==3.141.0
