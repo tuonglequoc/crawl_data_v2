@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function App() {
-  const baseUrl = "http://localhost:8000"
+  const baseUrl = "http://27.75.135.225:8000"
   const productDefault = {
     barcode: "",
     name: "",
@@ -44,7 +44,7 @@ function App() {
 
   const handleSunmit = () => {
     setProduct(productDefault)
-    fetch(`http://localhost:8000/products/crawl?source_id=${sourceId}&url=${productLink}&product_id=${productId}`)
+    fetch(`${baseUrl}/products/crawl?source_id=${sourceId}&url=${productLink}&product_id=${productId}`)
       .then(response => response.json())
       .then(data => setProduct(data));
   };
