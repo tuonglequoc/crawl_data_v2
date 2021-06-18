@@ -5,6 +5,7 @@ from api_models import DataSourceModel, HTMLDomApiModel, ProductApiModel
 from fastapi import FastAPI
 from fastapi.params import Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import HTTPException
 
 from starlette.responses import PlainTextResponse
 
@@ -37,7 +38,10 @@ async def crawl_test(
         page_content = get_data_from_url_by_chromedriver(url)
     else:
         page_content = get_data_from_url(url)
-    result = crawl_data(page_content, xpath)
+    try:
+        result = crawl_data(page_content, xpath)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid xpath")
     return result
 
 
@@ -64,10 +68,19 @@ def get_dom(source_id: int = Query(...), session: Session = Depends(create_sessi
 @app.get("/products/crawl")
 async def crawl_product_data(
     source_id: int = Query(...),
-    url: str = Query(...),
+    url: Optional[str] = Query(None),
+    product_id: Optional[str] = Query(None),
     session: Session = Depends(create_session),
 ):
-    # source = ctrl.get_source(source_id)
+    if not url and not product_id:
+        raise HTTPException(status_code=404, detail="Invalid input")
+
     dom = ctrl.get_dom(session, source_id)
-    product_result = ctrl.crawl_product_data(dom, url)
+    if url:
+        product_result = ctrl.crawl_product_data(dom, url)
+    elif product_id:
+        product_link = dom.source.product_link.rstrip("/")
+        product_url = f"{product_link}/{product_id}"
+        product_result = ctrl.crawl_product_data(dom, product_url)
+
     return product_result
