@@ -34,9 +34,16 @@ def crawl_product_data(dom: Any, url: str) -> ProductApiModel:
         product_page_content = get_data_from_url_by_chromedriver(url)
     else:
         product_page_content = get_data_from_url(url)
+
+    # Convert thumnail data
     thumbnail = crawl_data(product_page_content, dom.thumbnail)
     if not thumbnail.startswith("http"):
         thumbnail = dom.source.link.rstrip("/") + thumbnail
+
+    # Convert price data to integer
+    price = crawl_data(product_page_content, dom.price)
+    price = int("".join(char for char in price if char.isdigit()))
+
     product = ProductApiModel(
         barcode=crawl_data(product_page_content, dom.barcode),
         name=crawl_data(product_page_content, dom.name),
@@ -44,7 +51,7 @@ def crawl_product_data(dom: Any, url: str) -> ProductApiModel:
         country_of_origin="Japan",
         link=url,
         thumbnail=thumbnail,
-        price=crawl_data(product_page_content, dom.price),
+        price=price,
         status=True,
         description=crawl_data(product_page_content, dom.description),
         remarks="Auto crawler",

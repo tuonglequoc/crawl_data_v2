@@ -35,7 +35,7 @@ class ProductApiModel(BaseModel):
     country_of_origin: StrictStr = "Japan"
     link: StrictStr = None
     thumbnail: StrictStr = None
-    price: StrictStr = None
+    price: int = None
     status: bool = True
     description: StrictStr = None
     remarks: StrictStr = None
