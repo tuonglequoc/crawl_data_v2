@@ -44,7 +44,7 @@ h1{
 }
 
 .product-form .textarea_control {
-  height: 200px;
+  height: 100px;
 }
 
 .product-form .form-control::-webkit-input-placeholder {

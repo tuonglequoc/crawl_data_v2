@@ -20,14 +20,13 @@ class DataSource(BaseModel):
 class Product(BaseModel):
     __tablename__ = "product"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    barcode = Column(Text)
+    barcode = Column(Integer, primary_key=True)
     name = Column(Text)
     category = Column(Text)
     country_of_origin = Column(Text, default="Japan")
     link = Column(Text)
     thumbnail = Column(Text)
-    price = Column(Text)
+    price = Column(Integer)
     status = Column(Boolean, default=True)
     description = Column(Text)
     remarks = Column(Text)
@@ -39,7 +38,6 @@ class HTMLDom(BaseModel):
     __tablename__ = "dom"
 
     id = Column(Integer, ForeignKey("source.id"), primary_key=True)
-    barcode = Column(Text)
     name = Column(Text)
     category = Column(Text)
     thumbnail = Column(Text)
@@ -49,3 +47,12 @@ class HTMLDom(BaseModel):
     source = relationship(
         "DataSource", backref=backref("dom", uselist=False, lazy="subquery")
     )
+
+
+class License(BaseModel):
+    __tablename__ = "license"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    license_key = Column(Text)
+    website = Column(Text)
+    remarks = Column(Text)

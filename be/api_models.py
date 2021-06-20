@@ -28,8 +28,7 @@ class HTMLDomApiModel(BaseModel):
         orm_mode = True
 
 
-class ProductApiModel(BaseModel):
-    barcode: StrictStr = None
+class CrawledProductApiModel(BaseModel):
     name: StrictStr = None
     category: StrictStr = None
     country_of_origin: StrictStr = "Japan"
@@ -39,3 +38,20 @@ class ProductApiModel(BaseModel):
     status: bool = True
     description: StrictStr = None
     remarks: StrictStr = None
+
+
+class ProductApiModel(BaseModel):
+    barcode: int = ...
+    name: StrictStr = None
+    category: StrictStr = None
+    country_of_origin: StrictStr = "Japan"
+    link: StrictStr = None
+    thumbnail: StrictStr = None
+    price: int = None
+    status: bool = True
+    description: StrictStr = None
+    remarks: StrictStr = None
+    source_id: int = ...
+
+    class Config:
+        orm_mode = True

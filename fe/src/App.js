@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function App() {
-  const baseUrl = "http://27.75.135.225:8000"
+  const baseUrl = "http://localhost:8000"
   const productDefault = {
     barcode: "",
     name: "",
@@ -19,7 +19,6 @@ function App() {
   }
 
   const [sourceId, setSourceId] = useState("");
-  const [productId, setProductId] = useState("");
   const [productLink, setProductLink] = useState("");
   const [product, setProduct] = useState(productDefault)
   const [sources, setSources] = useState([])
@@ -30,24 +29,66 @@ function App() {
     setSourceId("1")
   }, []);
 
+  const clearAll = () => {
+    setProduct(productDefault)
+  }
+
   const handleSourceIdChange = (e) => {
     setSourceId(e.target.value);
-  };
-
-  const handleProductIdChange = (e) => {
-    setProductId(e.target.value);
   };
 
   const handleProductLinkChange = (e) => {
     setProductLink(e.target.value);
   };
 
-  const handleSunmit = () => {
-    setProduct(productDefault)
-    fetch(`${baseUrl}/products/crawl?source_id=${sourceId}&url=${productLink}&product_id=${productId}`)
+  const handleProductChangeStr = (e) => {
+    let key = e.target.name
+    let value = e.target.value
+    let clone = { ...product }
+    clone[key] = value
+    setProduct(clone);
+  };
+
+  const handleProductChangeInt = (e) => {
+    let key = e.target.name
+    let value = e.target.value
+    let clone = { ...product }
+    clone[key] = parseInt(value)
+    setProduct(clone);
+  };
+
+  const handleProductChangeBool = (e) => {
+    let key = e.target.name
+    let value = e.target.checked
+    let clone = { ...product }
+    clone[key] = value
+    setProduct(clone);
+  };
+
+  const handleGetProductData = () => {
+    clearAll()
+    fetch(`${baseUrl}/products/crawl?source_id=${sourceId}&url=${productLink}`)
       .then(response => response.json())
       .then(data => setProduct(data));
   };
+
+  const handlePostProductData = () => {
+    console.log(product)
+    product["source_id"] = sourceId
+    fetch(`${baseUrl}/products`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(product)
+    })
+      .then(response => {
+        if (response.ok)
+          alert("Saved data")
+      }).catch(err => alert(err))
+  }
+
   return (
     <div id="product" className="section">
       <div className="section-center">
@@ -57,7 +98,7 @@ function App() {
               <h1 className="text-center">Tự động lấy thông tin sản phẩm</h1>
               <div id="getproduct" className="form">
                 <div className="form-group">
-                  <div className="form-checkbox">
+                  {/* <div className="form-checkbox">
                     <label htmlFor="jancode">
                       Loại mã sản phẩm
                     </label>
@@ -69,7 +110,7 @@ function App() {
                       <input type="radio" id="tracking" name="bar-code-type" />
                       <span></span>TrackingID
                     </label>
-                  </div>
+                  </div> */}
                 </div>
                 <div className="row">
                   <div className="col-md-6">
@@ -84,7 +125,7 @@ function App() {
                   <div className="col-md-6">
                     <div className="form-group">
                       <span className="form-label">Mã sản phẩm(Jancode, TrackingID)</span>
-                      <input className="form-control" type="text" placeholder="Mã sản phẩm" onChange={(e) => handleProductIdChange(e)} />
+                      <input className="form-control" type="text" placeholder="Mã sản phẩm" name="barcode" value={product.barcode || ""} onChange={(e) => handleProductChangeInt(e)} />
                     </div>
                   </div>
                 </div>
@@ -97,7 +138,7 @@ function App() {
                   </div>
                   <div className="col-md-6">
                     <div className="form-btn">
-                      <button className="submit-btn" onClick={handleSunmit}>Lấy thông tin</button>
+                      <button className="submit-btn" onClick={handleGetProductData}>Lấy thông tin</button>
                     </div>
                   </div>
                 </div>
@@ -107,13 +148,13 @@ function App() {
                   <div className="col-md-6">
                     <div className="form-group">
                       <span className="form-label">Tên sản phẩm</span>
-                      <input className="form-control" type="text" placeholder="Tên sản phẩm" value={product.name} readOnly />
+                      <input className="form-control" type="text" placeholder="Tên sản phẩm" value={product.name} name="name" onChange={handleProductChangeStr} />
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div className="form-group">
                       <span className="form-label">Danh mục sản phẩm</span>
-                      <input className="form-control" type="text" placeholder="Danh mục sản phẩm" value={product.category} readOnly />
+                      <input className="form-control" type="text" placeholder="Danh mục sản phẩm" value={product.category} name="category" onChange={(e) => handleProductChangeStr(e)} />
                     </div>
                   </div>
                 </div>
@@ -121,13 +162,13 @@ function App() {
                   <div className="col-md-6">
                     <div className="form-group">
                       <span className="form-label">Đường link sản phẩm</span>
-                      <input className="form-control" type="text" placeholder="Đường link sản phẩm" value={product.link} readOnly />
+                      <input className="form-control" type="text" placeholder="Đường link sản phẩm" value={product.link} name="link" onChange={(e) => handleProductChangeStr(e)} />
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div className="form-group">
                       <span className="form-label">Giá sản phẩm</span>
-                      <input className="form-control" type="text" placeholder="Giá sản phẩm" value={product.price} readOnly />
+                      <input className="form-control" type="number" placeholder="Giá sản phẩm" value={product.price} name="price" onChange={(e) => handleProductChangeInt(e)} />
                     </div>
                   </div>
                 </div>
@@ -135,13 +176,13 @@ function App() {
                   <div className="col-md-6">
                     <div className="form-group">
                       <span className="form-label">Quốc gia</span>
-                      <input className="form-control" type="text" placeholder="Quốc gia" value={product.country_of_origin} readOnly />
+                      <input className="form-control" type="text" placeholder="Quốc gia" value={product.country_of_origin} name="country_of_origin" onChange={(e) => handleProductChangeStr(e)} />
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div className="form-group">
                       <span className="form-label">Mô tả</span>
-                      <textarea className="textarea_control form-control " type="text" placeholder="Mô tả" value={product.description} readOnly />
+                      <textarea className="textarea_control form-control " type="text" placeholder="Mô tả" value={product.description} name="description" onChange={(e) => handleProductChangeStr(e)} />
                     </div>
                   </div>
                 </div>
@@ -149,13 +190,14 @@ function App() {
                   <div className="col-md-6">
                     <div className="form-group">
                       <span className="form-label">Đường link ảnh sản phẩm</span>
-                      <img src={product.thumbnail} alt="" width="300" height="300" />
+                      {product.thumbnail ? (<img src={product.thumbnail} alt="" width="300" height="300" />) : null}
+                      {/* <img src={product.thumbnail} alt="" width="300" height="300" /> */}
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div className="form-group">
                       <span className="form-label">Ghi chú</span>
-                      <input className="form-control" type="text" placeholder="Ghi chú" value={product.remarks} readOnly />
+                      <input className="form-control" type="text" placeholder="Ghi chú" value={product.remarks} name="remarks" onChange={(e) => handleProductChangeStr(e)} />
                     </div>
                     <div className="form-group">
                       <div className="form-checkbox">
@@ -163,7 +205,7 @@ function App() {
                           Dữ liệu đã hoàn chỉnh
                         </label>
                         <label htmlFor="completed">
-                          <input type="checkbox" id="completed" checked={product.status} name="completed" readOnly />
+                          <input type="checkbox" id="completed" checked={product.status} name="status" onChange={(e) => handleProductChangeBool(e)} />
                           <span></span>Đã hoàn chỉnh
                         </label>
                         {/* <label htmlFor="incompleted">
@@ -173,10 +215,10 @@ function App() {
                       </div>
                     </div>
                     <div className="form-btn">
-                      <button className="submit-btn">Nhập dữ liệu</button>
+                      <button className="submit-btn" onClick={handlePostProductData}>Nhập dữ liệu</button>
                     </div>
                     <div className="form-btn">
-                      <button className="submit-btn">Clear all</button>
+                      <button className="submit-btn" onClick={clearAll}>Clear all</button>
                     </div>
                   </div>
                 </div>

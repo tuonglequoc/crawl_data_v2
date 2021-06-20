@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from sqlalchemy.orm.session import Session
-from api_models import DataSourceModel, HTMLDomApiModel, ProductApiModel
+
 from fastapi import FastAPI
 from fastapi.params import Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,13 +9,20 @@ from fastapi.exceptions import HTTPException
 
 from starlette.responses import PlainTextResponse
 
+import controllers as ctrl
+from api_models import (
+    DataSourceModel,
+    HTMLDomApiModel,
+    CrawledProductApiModel,
+    ProductApiModel,
+)
+from models import Product
 from helpers import (
     crawl_data,
     create_session,
     get_data_from_url,
     get_data_from_url_by_chromedriver,
 )
-import controllers as ctrl
 
 
 app = FastAPI()
@@ -65,7 +72,7 @@ def get_dom(source_id: int = Query(...), session: Session = Depends(create_sessi
     return result
 
 
-@app.get("/products/crawl")
+@app.get("/products/crawl", response_model=CrawledProductApiModel)
 async def crawl_product_data(
     source_id: int = Query(...),
     url: Optional[str] = Query(None),
@@ -84,3 +91,21 @@ async def crawl_product_data(
         product_result = ctrl.crawl_product_data(dom, product_url)
 
     return product_result
+
+
+@app.post("/products", response_model=ProductApiModel)
+async def post_product(
+    product_data: ProductApiModel, session: Session = Depends(create_session)
+):
+    if ctrl.get_product(session, product_data.barcode):
+        product = ctrl.update_product(session, product_data.dict())
+    else:
+        product = ctrl.post_product(session, product_data.dict())
+    return product
+
+
+@app.get("/products", response_model=List[ProductApiModel])
+async def get_all_products(
+    source: int = Query(None), session: Session = Depends(create_session)
+):
+    return ctrl.get_all_products(session, source)

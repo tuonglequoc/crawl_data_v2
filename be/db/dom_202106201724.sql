@@ -1,0 +1,5 @@
+INSERT INTO product_crawler.dom (id,name,category,thumbnail,price,description,remarks) VALUES
+	 (1,'//*[@class="goodsBox"]/h3','//*[@class="l-main"]/div[1]/div/ul/li[2]/a','//*[@id="image_wrapper"]/div[2]/img[1]/@src','//*[@class="price"]/span[1]/span[2]/text()[2]','//*[@class="ctBox02"]/p/text()',NULL),
+	 (2,'//*[@class="item-name"]','//table[@class="item-detail-table"]/tbody/tr[2]/td/a[1]/div','//div[@class="owl-dots"]/div[1]/div/img/@src','//div[@class="item-price-box text-center"]/span[1]','//p[@class="item-description-inner"]/text()',NULL),
+	 (3,'//*[@id="ProductTitle"]/div/h1','//*[@id="yjBreadcrumbs"]/p/b[2]/a','//*[@id="l-main"]/div/div[1]/div[1]/ul/li[1]/div/img/@src','//dd[@class="Price__value"]/text()','//*[@id="adoc"]/div[2]/div[2]/div',NULL),
+	 (4,'//*[@id="root"]/div/div/div[1]/div[4]/section/div[2]/div[1]/div/h1',NULL,'//*[@id="root"]/div/div/div[1]/div[4]/section/div[2]/div[2]/div/div/div/div[2]/div/div[1]/div/ul/li[1]/div/div/img/@src','//*[@id="root"]/div/div/div[1]/div[4]/section/div[2]/div[1]/div/div[1]/span/div/div/span','//*[@id="accordion-id-content"]/div/ul/div[1]/ul/p',NULL);
