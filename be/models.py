@@ -21,6 +21,7 @@ class Product(BaseModel):
     __tablename__ = "product"
 
     barcode = Column(Integer, primary_key=True)
+    code_type = Column(Boolean, default=True)
     name = Column(Text)
     category = Column(Text)
     country_of_origin = Column(Text, default="Japan")

@@ -4,11 +4,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function App() {
-  const BASE_URL = "http://localhost:8000"
+  const BASE_URL = "http://27.75.135.225:8000"
   const LICENSE = "abcd"
 
   const productDefault = {
     barcode: "",
+    code_type: true,
     name: "",
     category: "",
     country_of_origin: "",
@@ -80,11 +81,19 @@ function App() {
     setProduct(clone);
   };
 
+  const handleProductChangeBoolInverse = (e) => {
+    let key = e.target.name
+    let value = e.target.checked
+    let clone = { ...product }
+    clone[key] = !value
+    setProduct(clone);
+  };
+
   const handleGetProductData = () => {
     clearAll()
     fetch(`${BASE_URL}/products/crawl?source_id=${sourceId}&url=${productLink}&license=${LICENSE}`)
       .then(response => response.json())
-      .then(data => setProduct(data));
+      .then(data => setProduct({ ...product, ...data }));
   };
 
   const handlePostProductData = () => {
@@ -113,19 +122,19 @@ function App() {
               <h1 className="text-center">Tự động lấy thông tin sản phẩm</h1>
               <div id="getproduct" className="form">
                 <div className="form-group">
-                  {/* <div className="form-checkbox">
+                  <div className="form-checkbox">
                     <label htmlFor="jancode">
                       Loại mã sản phẩm
                     </label>
                     <label htmlFor="jancode">
-                      <input type="radio" id="jancode" checked name="bar-code-type" />
+                      <input type="radio" id="jancode" checked={product.code_type} onChange={(e) => handleProductChangeBool(e)} name="code_type" />
                       <span></span>Jancode(Barcode)
                     </label>
                     <label htmlFor="tracking">
-                      <input type="radio" id="tracking" name="bar-code-type" />
+                      <input type="radio" id="tracking" onChange={(e) => handleProductChangeBoolInverse(e)} name="code_type" />
                       <span></span>TrackingID
                     </label>
-                  </div> */}
+                  </div>
                 </div>
                 <div className="row">
                   <div className="col-md-6">
@@ -220,13 +229,13 @@ function App() {
                           Dữ liệu đã hoàn chỉnh
                         </label>
                         <label htmlFor="completed">
-                          <input type="checkbox" id="completed" checked={product.status} name="status" onChange={(e) => handleProductChangeBool(e)} />
+                          <input type="radio" id="completed" checked={product.status} name="status" onChange={(e) => handleProductChangeBool(e)} />
                           <span></span>Đã hoàn chỉnh
                         </label>
-                        {/* <label htmlFor="incompleted">
-                          <input type="radio" id="incompleted" name="completed" />
+                        <label htmlFor="incompleted">
+                          <input type="radio" id="incompleted" onChange={(e) => handleProductChangeBoolInverse(e)} name="status" />
                           <span></span>Chưa hoàn chỉnh
-                        </label> */}
+                        </label>
                       </div>
                     </div>
                     <div className="form-btn">

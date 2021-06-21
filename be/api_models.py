@@ -58,6 +58,7 @@ class CrawledProductApiModel(BaseModel):
 
 class ProductApiModel(BaseModel):
     barcode: int = ...
+    code_type: bool = None
     name: StrictStr = None
     category: StrictStr = None
     country_of_origin: StrictStr = "Japan"
