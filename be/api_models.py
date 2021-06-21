@@ -3,6 +3,14 @@ from pydantic.types import StrictStr
 
 
 class DataSourceModel(BaseModel):
+    name: StrictStr = None
+    link: StrictStr = None
+    product_link: StrictStr = None
+    javascript: bool = None
+    remarks: StrictStr = None
+
+
+class DataSourceModelOut(BaseModel):
     id: int = ...
     name: StrictStr = None
     link: StrictStr = None
@@ -15,8 +23,16 @@ class DataSourceModel(BaseModel):
 
 
 class HTMLDomApiModel(BaseModel):
+    name: StrictStr = None
+    category: StrictStr = None
+    thumbnail: StrictStr = None
+    price: StrictStr = None
+    description: StrictStr = None
+    remarks: StrictStr = None
+
+
+class HTMLDomApiModelOut(BaseModel):
     id: int = ...
-    barcode: StrictStr = None
     name: StrictStr = None
     category: StrictStr = None
     thumbnail: StrictStr = None
@@ -52,6 +68,22 @@ class ProductApiModel(BaseModel):
     description: StrictStr = None
     remarks: StrictStr = None
     source_id: int = ...
+
+    class Config:
+        orm_mode = True
+
+
+class LicenseApiModel(BaseModel):
+    license_key: StrictStr = ...
+    website: StrictStr = None
+    remarks: StrictStr = None
+
+
+class LicenseApiModelOut(BaseModel):
+    id: int
+    license_key: StrictStr
+    website: StrictStr
+    remarks: StrictStr
 
     class Config:
         orm_mode = True

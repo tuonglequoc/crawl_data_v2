@@ -8,13 +8,20 @@ from sqlalchemy.future.engine import create_engine
 from sqlalchemy.orm.session import Session, sessionmaker
 
 from config import config
-from models import Product, DataSource, HTMLDom
+from models import Product, DataSource, HTMLDom, License
 
 
 def get_dom(session: Session, dom_id: int):
     stmt = select(HTMLDom).where(HTMLDom.id == dom_id)
     result = session.execute(stmt)
     return result.scalar_one()
+
+
+def post_dom(session: Session, source_id: int, dom: dict):
+    dom = HTMLDom(**dom, id=source_id)
+    session.add(dom)
+    session.flush()
+    return dom
 
 
 def get_all_sources(session: Session):
@@ -27,6 +34,13 @@ def get_source(session: Session, source_id: int):
     stmt = select(DataSource).where(DataSource.id == source_id)
     result = session.execute(stmt)
     return result.scalar_one()
+
+
+def post_source(session: Session, source: dict):
+    source = DataSource(**source)
+    session.add(source)
+    session.flush()
+    return source
 
 
 def crawl_product_data(dom: Any, url: str) -> CrawledProductApiModel:
@@ -72,10 +86,11 @@ def get_product(session: Session, barcode: int = ...):
     return result.scalars().first()
 
 
-def post_product(session: Session, product_data: dict):
-    stmt = insert(Product).values(**product_data)
-    session.execute(stmt)
-    return product_data
+def post_product(session: Session, product: dict):
+    product = Product(**product)
+    session.add(product)
+    session.flush()
+    return product
 
 
 def update_product(session: Session, product: dict):
@@ -84,3 +99,31 @@ def update_product(session: Session, product: dict):
     )
     session.execute(stmt)
     return product
+
+
+def get_product(session: Session, product_id: int):
+    stmt = select(Product).where(Product.barcode == product_id)
+    result = session.execute(stmt)
+    return result.scalars().first()
+
+
+def validate_license(session: Session, license: str):
+    if not license:
+        return None
+
+    stmt = select(License).where(License.license_key == license)
+    result = session.execute(stmt)
+    return result.scalars().first()
+
+
+def post_license(session: Session, license: dict):
+    license = License(**license)
+    session.add(license)
+    session.flush()
+    return license
+
+
+def get_all_licenses(session: Session):
+    stmt = select(License)
+    result = session.execute(stmt)
+    return result.scalars().all()

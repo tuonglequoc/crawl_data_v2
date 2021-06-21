@@ -4,7 +4,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function App() {
-  const baseUrl = "http://localhost:8000"
+  const BASE_URL = "http://localhost:8000"
+  const LICENSE = "abcd"
+
   const productDefault = {
     barcode: "",
     name: "",
@@ -23,10 +25,23 @@ function App() {
   const [product, setProduct] = useState(productDefault)
   const [sources, setSources] = useState([])
 
+
   useEffect(() => {
     document.title = "Crawl Product Data"
-    fetch(`${baseUrl}/sources`).then(response => response.json()).then(data => setSources(data));
-    setSourceId("1")
+    fetch(`${BASE_URL}/sources?license=${LICENSE}`)
+      .then(response => {
+        if (!response.ok) {
+          throw Error(response.statusText);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.length > 0) {
+          setSources(data)
+          setSourceId("1")
+        }
+      })
+      .catch(err => alert(err))
   }, []);
 
   const clearAll = () => {
@@ -67,7 +82,7 @@ function App() {
 
   const handleGetProductData = () => {
     clearAll()
-    fetch(`${baseUrl}/products/crawl?source_id=${sourceId}&url=${productLink}`)
+    fetch(`${BASE_URL}/products/crawl?source_id=${sourceId}&url=${productLink}&license=${LICENSE}`)
       .then(response => response.json())
       .then(data => setProduct(data));
   };
@@ -75,7 +90,7 @@ function App() {
   const handlePostProductData = () => {
     console.log(product)
     product["source_id"] = sourceId
-    fetch(`${baseUrl}/products`, {
+    fetch(`${BASE_URL}/products?license=${LICENSE}`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
