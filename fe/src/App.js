@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function App() {
-  const BASE_URL = "http://27.75.135.225:8000"
+  const BASE_URL = "http://localhost:8000"
   const LICENSE = "abcd"
 
   const productDefault = {
@@ -91,10 +91,29 @@ function App() {
 
   const handleGetProductData = () => {
     clearAll()
-    fetch(`${BASE_URL}/products/crawl?source_id=${sourceId}&url=${productLink}&license=${LICENSE}`)
-      .then(response => response.json())
-      .then(data => setProduct({ ...product, ...data }));
+    fetch(`${BASE_URL}/products/crawl?url=${productLink}&license=${LICENSE}`)
+      .then(response => {
+        if (!response.ok) {
+          throw Error(`${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then(data => setProduct({ ...product, ...data }))
+      .catch(err => alert(err));
   };
+
+  const handleGetProductDataFromDb = () => {
+    clearAll()
+    fetch(`${BASE_URL}/products/${product.barcode}?license=${LICENSE}`)
+      .then(response => {
+        if (!response.ok) {
+          throw Error(`${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then(data => setProduct(data))
+      .catch(err => alert(err));
+  }
 
   const handlePostProductData = () => {
     console.log(product)
@@ -108,9 +127,13 @@ function App() {
       body: JSON.stringify(product)
     })
       .then(response => {
-        if (response.ok)
-          alert("Saved data")
-      }).catch(err => alert(err))
+        if (!response.ok) {
+          throw Error(`${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then(alert("Data is stored to database!"))
+      .catch(err => alert(err))
   }
 
   return (
@@ -139,23 +162,6 @@ function App() {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-group">
-                      <span className="form-label">Nguồn sản phẩm</span>
-                      <select className="form-control" onChange={(e) => handleSourceIdChange(e)}>
-                        {sources.map((source) => <option key={source.id} value={source.id}>{source.name}</option>)}
-                      </select>
-                      <span className="select-arrow"></span>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <span className="form-label">Mã sản phẩm(Jancode, TrackingID)</span>
-                      <input className="form-control" type="text" placeholder="Mã sản phẩm" name="barcode" value={product.barcode || ""} onChange={(e) => handleProductChangeInt(e)} />
-                    </div>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="form-group">
                       <span className="form-label">Đường link sản phẩm</span>
                       <input className="form-control" type="text" placeholder="Đường link sản phẩm" onChange={(e) => handleProductLinkChange(e)} />
                     </div>
@@ -163,6 +169,19 @@ function App() {
                   <div className="col-md-6">
                     <div className="form-btn">
                       <button className="submit-btn" onClick={handleGetProductData}>Lấy thông tin</button>
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="form-group">
+                      <span className="form-label">Mã sản phẩm(Jancode, TrackingID)</span>
+                      <input className="form-control" type="text" placeholder="Mã sản phẩm" name="barcode" value={product.barcode || ""} onChange={(e) => handleProductChangeInt(e)} />
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="form-btn">
+                      <button className="submit-btn" onClick={handleGetProductDataFromDb}>Lấy thông tin</button>
                     </div>
                   </div>
                 </div>

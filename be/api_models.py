@@ -1,11 +1,11 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, HttpUrl
 from pydantic.types import StrictStr
 
 
 class DataSourceModel(BaseModel):
     name: StrictStr = None
-    link: StrictStr = None
-    product_link: StrictStr = None
+    link: HttpUrl = None
+    product_link: HttpUrl = None
     javascript: bool = None
     remarks: StrictStr = None
 
@@ -13,8 +13,8 @@ class DataSourceModel(BaseModel):
 class DataSourceModelOut(BaseModel):
     id: int = ...
     name: StrictStr = None
-    link: StrictStr = None
-    product_link: StrictStr = None
+    link: HttpUrl = None
+    product_link: HttpUrl = None
     javascript: bool = None
     remarks: StrictStr = None
 
@@ -48,7 +48,7 @@ class CrawledProductApiModel(BaseModel):
     name: StrictStr = None
     category: StrictStr = None
     country_of_origin: StrictStr = "Japan"
-    link: StrictStr = None
+    link: HttpUrl = None
     thumbnail: StrictStr = None
     price: int = None
     status: bool = True
@@ -62,7 +62,7 @@ class ProductApiModel(BaseModel):
     name: StrictStr = None
     category: StrictStr = None
     country_of_origin: StrictStr = "Japan"
-    link: StrictStr = None
+    link: HttpUrl = None
     thumbnail: StrictStr = None
     price: int = None
     status: bool = True

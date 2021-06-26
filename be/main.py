@@ -1,4 +1,5 @@
 from typing import List, Optional
+from pydantic.networks import HttpUrl
 
 from sqlalchemy.orm.session import Session
 
@@ -115,26 +116,21 @@ def post_dom(
 
 @app.get("/products/crawl", response_model=CrawledProductApiModel)
 async def crawl_product_data(
-    source_id: int = Query(...),
-    url: Optional[str] = Query(None),
-    product_id: Optional[str] = Query(None),
+    # source_id: int = Query(...),
+    url: Optional[HttpUrl] = Query(...),
     session: Session = Depends(create_session),
     license: str = Query(...),
 ):
     if not ctrl.validate_license(session, license):
         raise HTTPException(status_code=403, detail="Invalid license")
-    if not url and not product_id:
-        raise HTTPException(status_code=404, detail="Invalid input")
 
-    dom = ctrl.get_dom(session, source_id)
-    if url:
-        product_result = ctrl.crawl_product_data(dom, url)
-    elif product_id:
-        product_link = dom.source.product_link.rstrip("/")
-        product_url = f"{product_link}/{product_id}"
-        product_result = ctrl.crawl_product_data(dom, product_url)
-
-    return product_result
+    doms = ctrl.get_dom(session)
+    for dom in doms:
+        if url.startswith(dom.source.product_link):
+            product_result = ctrl.crawl_product_data(dom, url)
+            return product_result
+    else:
+        raise HTTPException(status_code=400, detail="Cannot get data from this url")
 
 
 @app.post("/products", response_model=ProductApiModel)

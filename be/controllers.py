@@ -11,10 +11,12 @@ from config import config
 from models import Product, DataSource, HTMLDom, License
 
 
-def get_dom(session: Session, dom_id: int):
-    stmt = select(HTMLDom).where(HTMLDom.id == dom_id)
+def get_dom(session: Session, dom_id: int = None):
+    stmt = select(HTMLDom)
+    if dom_id:
+        stmt = stmt.where(HTMLDom.id == dom_id)
     result = session.execute(stmt)
-    return result.scalar_one()
+    return result.scalars().all()
 
 
 def post_dom(session: Session, source_id: int, dom: dict):
