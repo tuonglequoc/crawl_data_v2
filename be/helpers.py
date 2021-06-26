@@ -18,7 +18,10 @@ from sqlalchemy.orm.session import sessionmaker
 from config import config
 
 options = Options()
-options.headless = True
+options.add_argument('--headless')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-dev-shm-usage')
+options.add_argument("--remote-debugging-port=9222")
 
 
 engine = create_engine(config.DATABASE_URI)
@@ -41,7 +44,7 @@ def get_data_from_url(url: str, params: dict = None):
 
 
 def get_data_from_url_by_chromedriver(url: str):
-    driver = webdriver.Chrome("chromedriver", options=options)
+    driver = webdriver.Chrome("chromedriver", chrome_options=options)
     driver.get(url)
     content = driver.page_source
     driver.close()
